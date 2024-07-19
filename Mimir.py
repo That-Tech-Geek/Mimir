@@ -25,8 +25,8 @@ class ResearchPaper:
         self.title = ""
         self.theme = ""
         self.sections = ["Abstract", "Introduction", "Methodology", "Results", "Conclusions", "Sources"]
-        self.llama_api_key = "YOUR_LLAMA_API_KEY"
-        self.llama_model = llama.LLaMA(self.llama_api_key)
+        apikey = "YOUR_LLAMA_API_KEY"
+        self.llama_model = llama.LLaMA(apikey)
 
     def _get_user_input(self, prompt: str) -> str:
         user_input = st.text_input(prompt)
