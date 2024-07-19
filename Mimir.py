@@ -8,6 +8,12 @@
 	# 5. Conclusions
 	# 6. Sources
 # Order of Search: 231-user intervenes to provide research data if the model cannot find it anywhere else-45-paper achieves user validation-6
+import llama
+import streamlit
+
+st.title("Welcome, I am Mimir, and I can make building a reasearch paper very quick and efficient.")
+
+
 
 import requests
 from bs4 import BeautifulSoup
