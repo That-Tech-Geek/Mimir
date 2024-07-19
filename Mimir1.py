@@ -16,7 +16,7 @@ class ResearchPaper:
         st.write(f"Research Paper: {self.title} - {self.theme}")
 
     def generate_section(self, section_name: str) -> str:
-        prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
+        prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}. Quote all sources referred without fail."
         response = self.llama_model.ask(prompt)
         return response.answer
 
