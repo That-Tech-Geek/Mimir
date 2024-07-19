@@ -2,5 +2,4 @@ requests
 beautifulsoup4
 csv
 pandas
-PyPDF2
-nltk
+streamlit
