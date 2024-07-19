@@ -1,5 +1,5 @@
 import streamlit as st
-import requests
+from gemini import generate_section
 
 # App title
 st.set_page_config(page_title="Research Paper Generator")
@@ -10,38 +10,21 @@ with st.sidebar:
     title = st.text_input('Enter the title of your research paper:')
     theme = st.text_input('Enter the theme of your research paper:')
 
-# Function for generating research paper sections using Scholarcy's API
-def generate_section(title, theme, section_type):
-    api_url = "https://api.scholarcy.com/v1/analyze"
-    payload = {
-        "title": title,
-        "theme": theme,
-        "format": "stats",
-        "section_type": section_type,
-        "analysis_type": "observations_and_inferences",
-        "stats": {
-            "confidence_interval": 0.95,
-            "significance_level": 0.05
-        }
-    }
-    response = requests.post(api_url, json=payload)
-    if response.status_code == 200:
-        analysis = response.json()
-        if "sections" in analysis and len(analysis["sections"]) > 0:
-            section_response = analysis["sections"][0]["text"]
-            stats_response = analysis["sections"][0].get("stats", {})
-            return section_response, stats_response
-        else:
-            return None, None
-    else:
+# Function for generating research paper sections using Gemini
+def generate_section_gemini(title, theme, section_type):
+    try:
+        section, stats = generate_section(title, theme, section_type)
+        return section, stats
+    except Exception as e:
+        st.error(f"Error generating {section_type} section: {e}")
         return None, None
 
 # Generate research paper sections
 if title and theme:
-    abstract_response, abstract_stats = generate_section(title, theme, "abstract")
-    introduction_response, introduction_stats = generate_section(title, theme, "introduction")
-    literature_review_response, literature_review_stats = generate_section(title, theme, "literature review")
-    methodology_response, methodology_stats = generate_section(title, theme, "methodology")
+    abstract_response, abstract_stats = generate_section_gemini(title, theme, "abstract")
+    introduction_response, introduction_stats = generate_section_gemini(title, theme, "introduction")
+    literature_review_response, literature_review_stats = generate_section_gemini(title, theme, "literature review")
+    methodology_response, methodology_stats = generate_section_gemini(title, theme, "methodology")
 
     # Display generated responses
     st.header("Generated Research Paper Sections")
