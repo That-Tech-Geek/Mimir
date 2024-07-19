@@ -1,8 +1,8 @@
 import streamlit as st
-from gemini import Gemini
+from transformers import pipeline
 
-# Initialize Gemini model
-gemini_model = Gemini()
+# Initialize the text generation pipeline
+generator = pipeline('text-generation')
 
 class ResearchPaper:
     def __init__(self):
@@ -19,8 +19,8 @@ class ResearchPaper:
 
     def generate_section(self, section_name: str) -> str:
         prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
-        response = gemini_model.generate_text(prompt)
-        return response
+        response = generator(prompt, max_length=512, num_return_sequences=1)
+        return response[0]['generated_text']
 
     def generate_paper(self) -> None:
         st.write("Generating research paper...")
