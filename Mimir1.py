@@ -1,8 +1,13 @@
 import streamlit as st
-from transformers import pipeline
+from transformers import pipeline, AutoModelForSeq2SeqLM, AutoTokenizer
+
+# Initialize the model and tokenizer
+model_name = "t5-base"
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Initialize the text generation pipeline
-generator = pipeline('text-generation')
+generator = pipeline('text-generation', model=model, tokenizer=tokenizer)
 
 class ResearchPaper:
     def __init__(self):
