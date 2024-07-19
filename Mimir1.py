@@ -1,8 +1,8 @@
 import streamlit as st
-import llama
+from gemini import Gemini
 
-# Initialize LLaMA model with API key
-llama_model = llama.LLaMA(apikey)
+# Initialize Gemini model
+gemini_model = Gemini()
 
 class ResearchPaper:
     def __init__(self):
@@ -19,8 +19,8 @@ class ResearchPaper:
 
     def generate_section(self, section_name: str) -> str:
         prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
-        response = llama_model.ask(prompt)
-        return response.answer
+        response = gemini_model.generate_text(prompt)
+        return response
 
     def generate_paper(self) -> None:
         st.write("Generating research paper...")
