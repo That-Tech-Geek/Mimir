@@ -1,20 +1,3 @@
-# user inputs title and theme of paper
-# model searches scholar.google.com for similar papers, and asks the user if his title and themes are similar to any of them
-# if user says no, continue the process:
-	# 1. Abstract
-	# 2. Introduction
-	# 3. Methodology
-	# 4. Results
-	# 5. Conclusions
-	# 6. Sources
-# Order of Search: 231-user intervenes to provide research data if the model cannot find it anywhere else-45-paper achieves user validation-6
-import llama
-import streamlit
-
-st.title("Welcome, I am Mimir, and I can make building a reasearch paper very quick and efficient.")
-
-
-
 import requests
 from bs4 import BeautifulSoup
 import llama
@@ -25,7 +8,6 @@ class ResearchPaper:
         self.title = ""
         self.theme = ""
         self.sections = ["Abstract", "Introduction", "Methodology", "Results", "Conclusions", "Sources"]
-        apikey = "YOUR_LLAMA_API_KEY"
         self.llama_model = llama.LLaMA(apikey)
 
     def _get_user_input(self, prompt: str) -> str:
@@ -76,6 +58,6 @@ class ResearchPaper:
         self.generate_paper()
 
 if __name__ == "__main__":
-    st.title("Research Paper Generator")
+    st.title("I'm Mimir, and I make research papers a breeze!")
     research_paper = ResearchPaper()
     research_paper.run()
