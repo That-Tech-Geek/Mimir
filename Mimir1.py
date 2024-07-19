@@ -1,7 +1,7 @@
 import requests
-from bs4 import BeautifulSoup
 import llama
 import streamlit as st
+import json
 
 class ResearchPaper:
     def __init__(self):
@@ -18,16 +18,12 @@ class ResearchPaper:
         st.write(f"Research Paper: {self.title} - {self.theme}")
 
     def search_google_scholar(self) -> list:
-        url = f"https://scholar.google.com/scholar?q={self.title}+{self.theme}"
-        try:
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an exception for bad status codes
-            soup = BeautifulSoup(response.content, 'html.parser')
-            similar_papers = [result.find('h3', class_='gs_rt').text for result in soup.find_all('div', class_='gs_r')]
-            return similar_papers
-        except requests.exceptions.RequestException as e:
-            st.error(f"Error searching Google Scholar: {e}")
-            return []
+        api_url = f"https://serpstack.com/search?access_key=YOUR_SERPSTACK_API_KEY&q={self.title}+{self.theme}&tbm=sch"
+        response = requests.get(api_url)
+        response.raise_for_status()
+        search_results = response.json()
+        similar_papers = [result["title"] for result in search_results["organic_results"]]
+        return similar_papers
 
     def generate_section(self, section_name: str) -> str:
         prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
@@ -58,6 +54,6 @@ class ResearchPaper:
         self.generate_paper()
 
 if __name__ == "__main__":
-    st.title("I'm Mimir, and I make research papers a breeze!")
+    st.title("Research Paper Generator")
     research_paper = ResearchPaper()
     research_paper.run()
