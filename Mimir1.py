@@ -1,7 +1,7 @@
-import requests
 import llama
 import streamlit as st
 import json
+import urllib.request
 
 class ResearchPaper:
     def __init__(self):
@@ -17,13 +17,13 @@ class ResearchPaper:
     def display_paper_details(self) -> None:
         st.write(f"Research Paper: {self.title} - {self.theme}")
 
+    @st.cache(ttl=3600)  # cache for 1 hour
     def search_google_scholar(self) -> list:
         api_url = f"https://serpstack.com/search?access_key=YOUR_SERPSTACK_API_KEY&q={self.title}+{self.theme}&tbm=sch"
-        response = requests.get(api_url)
-        response.raise_for_status()
-        search_results = response.json()
-        similar_papers = [result["title"] for result in search_results["organic_results"]]
-        return similar_papers
+        with urllib.request.urlopen(api_url) as response:
+            search_results = json.loads(response.read().decode())
+            similar_papers = [result["title"] for result in search_results["organic_results"]]
+            return similar_papers
 
     def generate_section(self, section_name: str) -> str:
         prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
