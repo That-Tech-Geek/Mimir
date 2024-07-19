@@ -43,22 +43,34 @@ if title and theme:
     # Display generated responses
     st.header("Generated Research Paper Sections")
     st.subheader("Abstract")
-    st.write(abstract_response)
-    st.write("Stats:")
-    st.write(f"Confidence Interval: {abstract_stats['confidence_interval']}")
-    st.write(f"Significance Level: {abstract_stats['significance_level']}")
+    if abstract_response and abstract_stats:
+        st.write(abstract_response)
+        st.write("Stats:")
+        st.write(f"Confidence Interval: {abstract_stats.get('confidence_interval', 'N/A')}")
+        st.write(f"Significance Level: {abstract_stats.get('significance_level', 'N/A')}")
+    else:
+        st.write("Error generating abstract section.")
     st.subheader("Introduction")
-    st.write(introduction_response)
-    st.write("Stats:")
-    st.write(f"Confidence Interval: {introduction_stats['confidence_interval']}")
-    st.write(f"Significance Level: {introduction_stats['significance_level']}")
+    if introduction_response and introduction_stats:
+        st.write(introduction_response)
+        st.write("Stats:")
+        st.write(f"Confidence Interval: {introduction_stats.get('confidence_interval', 'N/A')}")
+        st.write(f"Significance Level: {introduction_stats.get('significance_level', 'N/A')}")
+    else:
+        st.write("Error generating introduction section.")
     st.subheader("Literature Review")
-    st.write(literature_review_response)
-    st.write("Stats:")
-    st.write(f"Confidence Interval: {literature_review_stats['confidence_interval']}")
-    st.write(f"Significance Level: {literature_review_stats['significance_level']}")
+    if literature_review_response and literature_review_stats:
+        st.write(literature_review_response)
+        st.write("Stats:")
+        st.write(f"Confidence Interval: {literature_review_stats.get('confidence_interval', 'N/A')}")
+        st.write(f"Significance Level: {literature_review_stats.get('significance_level', 'N/A')}")
+    else:
+        st.write("Error generating literature review section.")
     st.subheader("Methodology")
-    st.write(methodology_response)
-    st.write("Stats:")
-    st.write(f"Confidence Interval: {methodology_stats['confidence_interval']}")
-    st.write(f"Significance Level: {methodology_stats['significance_level']}")
+    if methodology_response and methodology_stats:
+        st.write(methodology_response)
+        st.write("Stats:")
+        st.write(f"Confidence Interval: {methodology_stats.get('confidence_interval', 'N/A')}")
+        st.write(f"Significance Level: {methodology_stats.get('significance_level', 'N/A')}")
+    else:
+        st.write("Error generating methodology section.")
