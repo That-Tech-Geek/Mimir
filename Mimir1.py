@@ -27,9 +27,12 @@ def generate_section(title, theme, section_type):
     response = requests.post(api_url, json=payload)
     if response.status_code == 200:
         analysis = response.json()
-        section_response = analysis["sections"][0]["text"]
-        stats_response = analysis["sections"][0]["stats"]
-        return section_response, stats_response
+        if "sections" in analysis and len(analysis["sections"]) > 0:
+            section_response = analysis["sections"][0]["text"]
+            stats_response = analysis["sections"][0].get("stats", {})
+            return section_response, stats_response
+        else:
+            return None, None
     else:
         return None, None
 
