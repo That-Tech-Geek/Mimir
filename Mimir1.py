@@ -1,12 +1,14 @@
-import llama
 import streamlit as st
+import llama
+
+# Initialize LLaMA model with API key
+llama_model = llama.LLaMA(apikey)
 
 class ResearchPaper:
     def __init__(self):
         self.title = ""
         self.theme = ""
         self.sections = ["Abstract", "Introduction", "Methodology", "Results", "Conclusions", "Sources"]
-        self.llama_model = llama.LLaMA(apikey)
 
     def _get_user_input(self, prompt: str) -> str:
         user_input = st.text_input(prompt)
@@ -16,8 +18,8 @@ class ResearchPaper:
         st.write(f"Research Paper: {self.title} - {self.theme}")
 
     def generate_section(self, section_name: str) -> str:
-        prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}. Quote all sources referred without fail."
-        response = self.llama_model.ask(prompt)
+        prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
+        response = llama_model.ask(prompt)
         return response.answer
 
     def generate_paper(self) -> None:
