@@ -24,8 +24,7 @@ class ResearchPaper:
 
     def generate_section(self, section_name: str) -> str:
         prompt = f"Generate a {section_name} for a research paper on {self.title} and {self.theme}."
-        input_ids = tokenizer.encode(prompt, return_tensors="pt", max_length=512, truncation=True)
-        response = generator(input_ids, max_length=512, num_return_sequences=1)
+        response = generator(prompt, max_length=512, num_return_sequences=1)
         return response[0]['generated_text']
 
     def generate_paper(self) -> None:
