@@ -1,96 +1,61 @@
-import requests
-from bs4 import BeautifulSoup
-import csv
-import os
-import json
-import pandas as pd
 import streamlit as st
+from hugchat import hugchat
+from hugchat.login import Login
 
-class ResearchPaper:
-    def __init__(self):
-        self.title = self.get_input("Enter title of Research Paper: ")
-        self.theme = self.get_input("Enter theme of Research Paper: ")
-        self.abstract = self.generate_text("abstract")
-        self.introduction = self.generate_text("introduction")
-        self.methodology = self.generate_text("methodology")
-        self.results = self.generate_text("results")
-        self.conclusion = self.generate_text("conclusion")
-        self.sources = []
+# App title
+st.set_page_config(page_title="Research Paper Generator")
 
-    #... (rest of the code remains the same)
-
-    def convert_papers_to_txt(self, pdf_dir):
-        txt_files = []
-        for file in os.listdir(pdf_dir):
-            if file.endswith(".pdf"):
-                pdf_path = os.path.join(pdf_dir, file)
-                txt_path = os.path.join(pdf_dir, file.replace(".pdf", ".txt"))
-                self.pdf_to_text(pdf_path, txt_path)
-                txt_files.append(txt_path)
-        return txt_files
-
-    def pdf_to_text(self, pdf_path, txt_path):
-        # Replaced PyPDF2 with Streamlit's built-in PDF rendering
-        with open(pdf_path, 'rb') as pdf_file:
-            st.image(pdf_file, width=800)  # display the PDF as an image
-            # Note: this will not extract text from the PDF, but display it as an image
-            # If you need to extract text, you may need to use a different library or approach
-
-    def summarize_txt_files(self, txt_files):
-        summaries = []
-        for txt_file in txt_files:
-            with open(txt_file, 'r') as f:
-                text = f.read()
-                summary = self.summarize_text(text)
-                summaries.append(summary)
-        return summaries
-
-    def summarize_text(self, text):
-        # Replaced nltk with Streamlit's built-in text processing capabilities
-        st.write(text)  # display the text
-
-    def merge_summaries_into_research_paper(self, summaries):
-        research_paper_text = ''
-        research_paper_text += "Abstract:\n" + self.abstract + "\n\n"
-        research_paper_text += "Introduction:\n" + self.introduction + "\n\n"
-        research_paper_text += "Methodology:\n" + self.methodology + "\n\n"
-        research_paper_text += "Results:\n" + '\n'.join(summaries) + "\n\n"
-        research_paper_text += "Conclusion:\n" + self.conclusion + "\n\n"
-        research_paper_text += "Sources:\n" + '\n'.join(self.sources) + "\n\n"
-        return research_paper_text
-
-    def submit_results(self, csv_file_path):
-        try:
-            df = pd.read_csv(csv_file_path)
-            summary = df.describe().to_string()
-            print(f"Results:\n{summary}")
-            with open('results.csv', 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(["Title", "Theme", "Abstract", "Introduction", "Methodology", "Results", "Conclusion", "Sources"])
-                writer.writerow([self.title, self.theme, self.abstract, self.introduction, self.methodology, summary, self.conclusion, "\n".join(self.sources)])
-            print("Results submitted successfully!")
-        except FileNotFoundError:
-            print("File not found. Please enter a valid file path.")
-        except csv.Error as e:
-            print(f"Error submitting results: {e}")
-
-def main():
-    paper = ResearchPaper()
-    try:
-        if paper.search_google_scholar():
-            print("Search completed successfully")
-            paper.download_papers()
-            csv_file_path = input("Enter the path of the CSV file: ")
-            pdf_dir = input("Enter the path of the PDF directory: ")
-            txt_files = paper.convert_papers_to_txt(pdf_dir)
-            summaries = paper.summarize_txt_files(txt_files)
-            research_paper_text = paper.merge_summaries_into_research_paper(summaries)
-            print(research_paper_text)
-            paper.submit_results(csv_file_path)
+# Hugging Face Credentials
+with st.sidebar:
+    st.title('Research Paper Generator')
+    if ('EMAIL' in st.secrets) and ('PASS' in st.secrets):
+        st.success('HuggingFace Login credentials already provided!', icon='✅')
+        hf_email = st.secrets['EMAIL']
+        hf_pass = st.secrets['PASS']
+    else:
+        hf_email = st.text_input('Enter E-mail:', type='password')
+        hf_pass = st.text_input('Enter password:', type='password')
+        if not (hf_email and hf_pass):
+            st.warning('Please enter your credentials!', icon='⚠️')
         else:
-            print("Search failed")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+            st.success('Proceed to entering your research paper details!', icon='👉')
 
-if __name__ == "__main__":
-    main()
+# User input for title and theme
+title = st.text_input('Enter the title of your research paper:')
+theme = st.text_input('Enter the theme of your research paper:')
+
+# Store LLM generated responses
+if "messages" not in st.session_state.keys():
+    st.session_state.messages = [{"role": "assistant", "content": "How may I help you?"}]
+
+# Function for generating LLM response
+def generate_response(prompt_input, email, passwd):
+    # Hugging Face Login
+    sign = Login(email, passwd)
+    cookies = sign.login()
+    # Create ChatBot
+    chatbot = hugchat.ChatBot(cookies=cookies.get_dict())
+    return chatbot.chat(prompt_input)
+
+# Generate research paper sections
+if title and theme:
+    abstract_prompt = f"Generate an abstract for a research paper on {theme} titled {title}"
+    introduction_prompt = f"Generate an introduction for a research paper on {theme} titled {title}"
+    literature_review_prompt = f"Generate a literature review for a research paper on {theme} titled {title}"
+    methodology_prompt = f"Generate a methodology for a research paper on {theme} titled {title}"
+
+    abstract_response = generate_response(abstract_prompt, hf_email, hf_pass)
+    introduction_response = generate_response(introduction_prompt, hf_email, hf_pass)
+    literature_review_response = generate_response(literature_review_prompt, hf_email, hf_pass)
+    methodology_response = generate_response(methodology_prompt, hf_email, hf_pass)
+
+    # Display generated responses
+    st.header("Generated Research Paper Sections")
+    st.subheader("Abstract")
+    st.write(abstract_response)
+    st.subheader("Introduction")
+    st.write(introduction_response)
+    st.subheader("Literature Review")
+    st.write(literature_review_response)
+    st.subheader("Methodology")
+    st.write(methodology_response)
