@@ -1,4 +1,4 @@
 streamlit
-hugchat
 requests
-gemini
+llama
+beautifulsoup
